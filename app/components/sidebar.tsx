@@ -10,6 +10,7 @@ import AddIcon from "../icons/add.svg";
 import CloseIcon from "../icons/close.svg";
 import MaskIcon from "../icons/mask.svg";
 import PluginIcon from "../icons/plugin.svg";
+import BrainIcon from "../icons/brain.svg";
 
 import Locale from "../locales";
 
@@ -119,9 +120,9 @@ export function SideBar(props: { className?: string }) {
       }`}
     >
       <div className={styles["sidebar-header"]}>
-        <div className={styles["sidebar-title"]}>ChatGPT-Midjourney</div>
+        <div className={styles["sidebar-title"]}>Chat办公大师</div>
         <div className={styles["sidebar-sub-title"]}>
-          Your own AI assistant.
+          工作从未如此轻松.
         </div>
         <div className={styles["sidebar-logo"] + " no-dark"}>
           <ChatGptIcon />
@@ -175,7 +176,7 @@ export function SideBar(props: { className?: string }) {
           </div>
           <div className={styles["sidebar-action"]}>
             <a href={REPO_URL} target="_blank">
-              <IconButton icon={<GithubIcon />} shadow />
+              <IconButton icon={<BrainIcon />} shadow />
             </a>
           </div>
         </div>

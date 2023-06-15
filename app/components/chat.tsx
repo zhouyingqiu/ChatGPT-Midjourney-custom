@@ -23,6 +23,8 @@ import BottomIcon from "../icons/bottom.svg";
 import StopIcon from "../icons/pause.svg";
 import UploadIcon from "../icons/upload.svg";
 
+import minganciArr from "../utils/minganci";
+
 import {
     ChatMessage,
     SubmitKey,
@@ -522,7 +524,7 @@ export function Chat() {
     };
 
     const doSubmit = async (userInput: string) => {
-        userInput = userInput.trim();
+        userInput = filterMinganci(userInput);
         console.log(useImages, mjImageMode)
         if (useImages.length > 0) {
             if (mjImageMode === 'IMAGINE' && userInput == "") {
@@ -675,6 +677,13 @@ export function Chat() {
         (session.clearContextIndex ?? -1) >= 0
             ? session.clearContextIndex! + context.length
             : -1;
+    
+    const filterMinganci = (s: string) => {
+        minganciArr.forEach((v) => {
+          s = s.replaceAll(v, "");
+        });
+        return s;
+    };
 
     // preview messages
     const messages = context
@@ -698,7 +707,7 @@ export function Chat() {
                     {
                         ...createMessage({
                             role: "user",
-                            content: userInput,
+                            content: filterMinganci(userInput),
                         }),
                         preview: true,
                     },

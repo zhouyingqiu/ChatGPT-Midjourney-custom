@@ -11,7 +11,7 @@ const ru: LocaleType = {
     ChatItemCount: (count: number) => `${count} сообщений`,
   },
   Chat: {
-    SubTitle: (count: number) => `${count} сообщений с ChatGPT`,
+    SubTitle: (count: number) => `${count} сообщений с 办公大师`,
     Actions: {
       ChatList: "Перейти к списку чатов",
       CompressedHistory: "Сжатая история памяти",

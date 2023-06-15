@@ -15,6 +15,10 @@ const nextConfig = {
         source: "/sharegpt",
         destination: "https://sharegpt.com/api/conversations",
       },
+      {
+        source: "/aimaster/:path*",
+        destination: "https://chat.skadiseye.com/aimaster/:path*",
+      },
     ];
 
     const apiUrl = process.env.API_URL;

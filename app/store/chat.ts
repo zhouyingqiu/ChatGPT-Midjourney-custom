@@ -11,6 +11,7 @@ import {StoreKey} from "../constant";
 import {api, getHeaders, useGetMidjourneySelfProxyUrl, RequestMessage} from "../client/api";
 import {ChatControllerPool} from "../client/controller";
 import {prettyObject} from "../utils/format";
+import minganciArr from "../utils/minganci";
 
 export type ChatMessage = RequestMessage & {
     date: string;
@@ -106,6 +107,14 @@ interface ChatStore {
 function countMessages(msgs: ChatMessage[]) {
     return msgs.reduce((pre, cur) => pre + cur.content.length, 0);
 }
+
+const MINGANCE_RES = '返回生成内容有误，请重试'
+const hasMinganci = (s: string) => {
+    // minganciArr.forEach((v) => {
+    //   s = s.replaceAll(v, "");
+    // });
+    return minganciArr.some(v => s.includes(v))
+};
 
 export const useChatStore = create<ChatStore>()(
     persist(
@@ -227,6 +236,7 @@ export const useChatStore = create<ChatStore>()(
             },
 
             onNewMessage(message) {
+                // message = filterMinganci(message)
                 get().updateCurrentSession((session) => {
                     session.lastUpdate = Date.now();
                 });
@@ -459,14 +469,22 @@ export const useChatStore = create<ChatStore>()(
                         onUpdate(message) {
                             botMessage.streaming = true;
                             if (message) {
-                                botMessage.content = message;
+                                if(hasMinganci(message)) {
+                                    botMessage.content = MINGANCE_RES;
+                                }else {
+                                    botMessage.content = message;
+                                }
                             }
                             set(() => ({}));
                         },
                         onFinish(message) {
                             botMessage.streaming = false;
                             if (message) {
-                                botMessage.content = message;
+                                if(hasMinganci(message)) {
+                                    botMessage.content = MINGANCE_RES;
+                                }else {
+                                    botMessage.content = message;
+                                }
                                 get().onNewMessage(botMessage);
                             }
                             ChatControllerPool.remove(

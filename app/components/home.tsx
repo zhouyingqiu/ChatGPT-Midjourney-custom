@@ -98,15 +98,82 @@ const loadAsyncGoogleFont = () => {
   document.head.appendChild(linkEl);
 };
 
+function getCookie(key: string) {
+  let re = new RegExp("s?" + key + "=([^;]+)(;|$)");
+  if (document && document.cookie && re) {
+    const matches = document.cookie.match(re);
+    if (matches && matches.length > 1) {
+      return matches[1];
+    }
+  }
+  return "";
+}
+
+const fetchHasAuth = (): Promise<boolean> => {
+  return new Promise((resolve) => {
+    // setTimeout(() => {
+    //   console.log('true')
+    //   resolve(true);
+    // }, 5000);
+    fetch(
+      `/aimaster/lqw3cNjxfdtU?phone_number=${getCookie(
+        "phone_number",
+      )}&key=${getCookie("key")}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "GET",
+      },
+    )
+      .then((res) => {
+        res.json().then((r) => {
+          if (r.status === 0) {
+            resolve(true);
+          } else {
+            // 这里可以直接跳转到登录地址
+            resolve(false);
+          }
+        });
+      })
+      .finally(() => {
+        // console.log(123)
+      });
+  });
+};
+
 function Screen() {
   const config = useAppConfig();
   const location = useLocation();
   const isHome = location.pathname === Path.Home;
   const isMobileScreen = useMobileScreen();
 
+  const [hasAuth, setHasAuth] = useState(false);
+  const CHECK_MINUTE = 0.1;
   useEffect(() => {
     loadAsyncGoogleFont();
+    async function fetchData() {
+      try {
+        const hasAuthValue = await fetchHasAuth(); // replace fetchHasAuth with your own asynchronous function to retrieve the value of hasAuth
+        setHasAuth(hasAuthValue);
+        if (!hasAuthValue) {
+          window.location.href = "https://chat.skadiseye.com/bot";
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchData();
+    const interval = setInterval(() => {
+      fetchData();
+    }, 60000 * CHECK_MINUTE);
+    return () => clearInterval(interval);
   }, []);
+
+  if (!hasAuth) {
+    // 这里跳转到登录页面
+    return null;
+  }
 
   return (
     <div
