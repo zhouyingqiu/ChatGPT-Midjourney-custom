@@ -5,7 +5,10 @@ import styles from "./home.module.scss";
 import { IconButton } from "./button";
 import SettingsIcon from "../icons/settings.svg";
 import GithubIcon from "../icons/github.svg";
-import ChatGptIcon from "../icons/chatgpt.svg";
+// import ChatGptIcon from "../icons/chatgpt.svg";
+// import ChatGptPng from "../icons/chat-logo.png";
+import ChatGptIcon from "../icons/chat-icon.png";
+import ChatGptFull from "../icons/chat-full.png";
 import AddIcon from "../icons/add.svg";
 import CloseIcon from "../icons/close.svg";
 import MaskIcon from "../icons/mask.svg";
@@ -121,11 +124,19 @@ export function SideBar(props: { className?: string }) {
     >
       <div className={styles["sidebar-header"]}>
         <div className={styles["sidebar-title"]}>Chat办公大师</div>
-        <div className={styles["sidebar-sub-title"]}>
-          工作从未如此轻松.
-        </div>
-        <div className={styles["sidebar-logo"] + " no-dark"}>
-          <ChatGptIcon />
+        <div className={styles["sidebar-sub-title"]}>工作从未如此轻松.</div>
+        <div
+          className={styles["sidebar-logo"] + " no-dark"}
+          style={{ height: "48px", overflow: "hidden", width: "60px" }}
+        >
+          <img
+            src={ChatGptFull.src}
+            style={{
+              height: "44px",
+              filter: "drop-shadow(#0969da 0 47px)",
+              transform: "translateY(-45px) translateX(4px)",
+            }}
+          />
         </div>
       </div>
 

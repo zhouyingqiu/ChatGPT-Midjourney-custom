@@ -7,7 +7,7 @@ import {
   EventStreamContentType,
   fetchEventSource,
 } from "@fortaine/fetch-event-source";
-import { prettyObject } from "@/app/utils/format";
+import { guid, prettyObject } from "@/app/utils/format";
 
 export class ChatGPTApi implements LLMApi {
   public ChatPath = "v1/chat/completions";
@@ -15,11 +15,21 @@ export class ChatGPTApi implements LLMApi {
   public SubsPath = "dashboard/billing/subscription";
 
   path(path: string): string {
-    let openaiUrl = useAccessStore.getState().openaiUrl;
-    if (openaiUrl.endsWith("/")) {
-      openaiUrl = openaiUrl.slice(0, openaiUrl.length - 1);
+    const accessState = useAccessStore.getState();
+    if (accessState.isFree) {
+      if (accessState.freeType === 1) {
+        return `/claude/stream_chat`;
+      } else {
+        return `/api/conversation/talk`;
+      }
+    } else {
+      let openaiUrl = accessState.openaiUrl;
+      if (openaiUrl.endsWith("/")) {
+        openaiUrl = openaiUrl.slice(0, openaiUrl.length - 1);
+      }
+      console.log([openaiUrl, path].join("/"));
+      return [openaiUrl, path].join("/");
     }
-    return [openaiUrl, path].join("/");
   }
 
   extractMessage(res: any) {
@@ -30,6 +40,7 @@ export class ChatGPTApi implements LLMApi {
     const messages = options.messages.map((v) => ({
       role: v.role,
       content: v.content,
+      free_attr: v?.free_attr
     }));
 
     const modelConfig = {
@@ -40,16 +51,49 @@ export class ChatGPTApi implements LLMApi {
       },
     };
 
-    const requestPayload = {
-      messages,
-      stream: options.config.stream,
-      model: modelConfig.model,
-      temperature: modelConfig.temperature,
-      presence_penalty: modelConfig.presence_penalty,
-    };
+    // let requestPayload = useAccessStore.getState().isFree
+    //   ? { prompt: messages[messages.length - 1].content }
+    //   : {
+    //       messages,
+    //       stream: options.config.stream,
+    //       model: modelConfig.model,
+    //       temperature: modelConfig.temperature,
+    //       presence_penalty: modelConfig.presence_penalty,
+    //     };
+    let requestPayload;
+    if (useAccessStore.getState().isFree) {
+      if (useAccessStore.getState().freeType === 1) {
+        requestPayload = { prompt: messages[messages.length - 1].content };
+      } else {
+        requestPayload = {
+          prompt: messages[messages.length - 1].content,
+          stream: true,
+          model: modelConfig.model,
+          message_id: messages[messages.length - 1].free_attr?.id,
+          parent_message_id: messages[messages.length - 1].free_attr?.p_id,
+          conversation_id: messages[messages.length - 1].free_attr?.conversation_id,
+        };
+      }
+    } else {
+      requestPayload = {
+        messages,
+        stream: options.config.stream,
+        model: modelConfig.model,
+        temperature: modelConfig.temperature,
+        presence_penalty: modelConfig.presence_penalty,
+      };
+    }
+
+
+    /**
+     * prompt
+     * stream
+     * model
+     * message_id
+     * parent_message_id
+     */
 
     console.log("[Request] openai payload: ", requestPayload);
-
     const shouldStream = !!options.config.stream;
     const controller = new AbortController();
     options.onController?.(controller);
@@ -68,7 +112,6 @@ export class ChatGPTApi implements LLMApi {
         () => controller.abort(),
         REQUEST_TIMEOUT_MS,
       );
-
       if (shouldStream) {
         let responseText = "";
         let finished = false;
@@ -85,6 +128,7 @@ export class ChatGPTApi implements LLMApi {
         fetchEventSource(chatPath, {
           ...chatPayload,
           async onopen(res) {
+            console.log(res);
             clearTimeout(requestTimeoutId);
             const contentType = res.headers.get("content-type");
             console.log(
@@ -129,15 +173,39 @@ export class ChatGPTApi implements LLMApi {
               return finish();
             }
             const text = msg.data;
+
             try {
               const json = JSON.parse(text);
-              const delta = json.choices[0].delta.content;
-              if (delta) {
-                responseText += delta;
-                options.onUpdate?.(responseText, delta);
+              if (
+                useAccessStore.getState().isFree &&
+                useAccessStore.getState().freeType === 2
+              ) {
+                const conversationId = json.conversation_id;
+                const currentMessage = json.message;
+                if (currentMessage.author.role === "assistant") {
+                  const delta = currentMessage.content.parts[0];
+                  if (delta) {
+                    responseText = delta;
+                    options.onUpdate?.(responseText, delta, {
+                      conversation_id: conversationId,
+                      id: currentMessage.id,
+                    });
+                  }
+                }
+              } else {
+                const delta = json.choices[0].delta.content;
+                if (delta) {
+                  responseText += delta;
+                  options.onUpdate?.(responseText, delta);
+                }
               }
             } catch (e) {
-              console.error("[Request] parse error", text, msg);
+              if (typeof text === "string") {
+                responseText += text;
+                options.onUpdate?.(responseText, text);
+              } else {
+                console.error("[Request] parse error", text, msg);
+              }
             }
           },
           onclose() {
@@ -151,6 +219,7 @@ export class ChatGPTApi implements LLMApi {
         });
       } else {
         const res = await fetch(chatPath, chatPayload);
+        console.log(res, 'res')
         clearTimeout(requestTimeoutId);
 
         const resJson = await res.json();

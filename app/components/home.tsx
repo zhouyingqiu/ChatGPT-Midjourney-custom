@@ -9,7 +9,7 @@ import styles from "./home.module.scss";
 import BotIcon from "../icons/bot.svg";
 import LoadingIcon from "../icons/three-dots.svg";
 
-import { getCSSVar, useMobileScreen } from "../utils";
+import { getCSSVar, useMobileScreen, getCookie } from "../utils";
 
 import dynamic from "next/dynamic";
 import { Path, SlotID } from "../constant";
@@ -23,6 +23,7 @@ import {
 } from "react-router-dom";
 import { SideBar } from "./sidebar";
 import { useAppConfig } from "../store/config";
+import { useAccessStore } from "../store/access";
 
 export function Loading(props: { noLogo?: boolean }) {
   return (
@@ -98,18 +99,7 @@ const loadAsyncGoogleFont = () => {
   document.head.appendChild(linkEl);
 };
 
-function getCookie(key: string) {
-  let re = new RegExp("s?" + key + "=([^;]+)(;|$)");
-  if (document && document.cookie && re) {
-    const matches = document.cookie.match(re);
-    if (matches && matches.length > 1) {
-      return matches[1];
-    }
-  }
-  return "";
-}
-
-const fetchHasAuth = (): Promise<boolean> => {
+const fetchHasAuth = (): Promise<any> => {
   return new Promise((resolve) => {
     // setTimeout(() => {
     //   console.log('true')
@@ -128,12 +118,14 @@ const fetchHasAuth = (): Promise<boolean> => {
     )
       .then((res) => {
         res.json().then((r) => {
-          if (r.status === 0) {
-            resolve(true);
-          } else {
-            // 这里可以直接跳转到登录地址
-            resolve(false);
-          }
+          // useAccessStore().updateUserInfo("1", "2", true, 1);
+          // if (r.status === 0) {
+          //   resolve(r);
+          // } else {
+          //   // 这里可以直接跳转到登录地址
+          // }
+          resolve(r);
+
         });
       })
       .finally(() => {
@@ -148,14 +140,28 @@ function Screen() {
   const isHome = location.pathname === Path.Home;
   const isMobileScreen = useMobileScreen();
 
+
   const [hasAuth, setHasAuth] = useState(false);
-  const CHECK_MINUTE = 0.1;
+  const CHECK_MINUTE = 1;
+  const accessStore = useAccessStore()
+
   useEffect(() => {
+
     loadAsyncGoogleFont();
     async function fetchData() {
       try {
         const hasAuthValue = await fetchHasAuth(); // replace fetchHasAuth with your own asynchronous function to retrieve the value of hasAuth
-        setHasAuth(hasAuthValue);
+        setHasAuth(hasAuthValue ? hasAuthValue.status === 0 : false);
+        // accessStore.updateUserInfo(getCookie(
+        //   "key",
+        // ), getCookie(
+        //   "phone_number",
+        // ), true, hasAuthValue.data ? 1 : 1);
+        accessStore.updateUserInfo(getCookie(
+          "key",
+        ), getCookie(
+          "phone_number",
+        ), hasAuthValue.status === -3, hasAuthValue.data ? 2 : 1);
         if (!hasAuthValue) {
           window.location.href = "https://chat.skadiseye.com/bot";
         }
@@ -174,7 +180,6 @@ function Screen() {
     // 这里跳转到登录页面
     return null;
   }
-
   return (
     <div
       className={

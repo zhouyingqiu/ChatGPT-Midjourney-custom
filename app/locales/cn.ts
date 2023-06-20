@@ -10,7 +10,7 @@ const cn = {
     ChatItemCount: (count: number) => `${count} 条对话`,
   },
   Chat: {
-    SubTitle: (count: number) => `与 办公大师 的 ${count} 条对话`,
+    SubTitle: (count: number) => `与 办公大师 的 ${count} 条对话；画图输入 /mj +提示词`,
     Actions: {
       ChatList: "查看消息列表",
       CompressedHistory: "查看压缩后的历史 Prompt",

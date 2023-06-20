@@ -655,11 +655,12 @@ export function Chat() {
         inputRef.current?.focus();
     };
 
+    const accessStore = useAccessStore();
     const context: RenderMessage[] = session.mask.hideContext
         ? []
         : session.mask.context.slice();
+   
 
-    const accessStore = useAccessStore();
 
     if (
         context.length === 0 &&
@@ -714,6 +715,22 @@ export function Chat() {
                 ]
                 : [],
         );
+
+    // if(messages.length === 1) {
+    //     if(accessStore.isFree && accessStore.freeType === 2) {
+    //         if(context[0].content && !isLoading ) {
+    //             setIsLoading(true)
+    //             console.log(context[0].content)
+    //             setTimeout(() => {
+    //                 setIsLoading(false)
+    //             }, 500)
+    //             // chatStore.onUserInput(context[0].content,{
+    //             //     setAutoScroll
+    //             // }).then(() => setIsLoading(false));
+    //             // chatStore.onUserInput(context[0].content)
+    //         }
+    //     }
+    // }
 
     const [showPromptModal, setShowPromptModal] = useState(false);
 

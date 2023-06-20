@@ -11,6 +11,7 @@ export type ChatModel = ModelType;
 export interface RequestMessage {
   role: MessageRole;
   content: string;
+  free_attr?: Record<string, any>
 }
 
 export interface LLMConfig {
@@ -26,7 +27,7 @@ export interface ChatOptions {
   messages: RequestMessage[];
   config: LLMConfig;
 
-  onUpdate?: (message: string, chunk: string) => void;
+  onUpdate?: (message: string, chunk: string, attr?: any) => void;
   onFinish: (message: string) => void;
   onError?: (err: Error) => void;
   onController?: (controller: AbortController) => void;
@@ -118,6 +119,9 @@ export function getHeaders() {
   if(validString(accessStore.midjourneyProxyUrl)){
     headers["midjourney-proxy-url"] = accessStore.midjourneyProxyUrl;
   }
+  // if(accessStore.isFree) {
+  //   headers['accept'] = 'text/plain'
+  // }
 
   return headers;
 }

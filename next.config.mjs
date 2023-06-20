@@ -19,6 +19,14 @@ const nextConfig = {
         source: "/aimaster/:path*",
         destination: "https://chat.skadiseye.com/aimaster/:path*",
       },
+      {
+        source: "/claude/:path*",
+        destination: "http://216.240.134.142:8088/claude/:path*",
+      },
+      {
+        source: "/api/conversation/:path*",
+        destination: "http://216.240.134.142:8071/api/conversation/:path*",
+      },
     ];
 
     const apiUrl = process.env.API_URL;

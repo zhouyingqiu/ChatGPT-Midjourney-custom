@@ -167,3 +167,15 @@ export function autoGrowTextArea(dom: HTMLTextAreaElement) {
 export function getCSSVar(varName: string) {
   return getComputedStyle(document.body).getPropertyValue(varName).trim();
 }
+
+
+export function getCookie(key: string) {
+  let re = new RegExp("s?" + key + "=([^;]+)(;|$)");
+  if (document && document.cookie && re) {
+    const matches = document.cookie.match(re);
+    if (matches && matches.length > 1) {
+      return matches[1];
+    }
+  }
+  return "";
+}

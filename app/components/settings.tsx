@@ -45,6 +45,7 @@ import { ErrorBoundary } from "./error";
 import { InputRange } from "./input-range";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarPicker } from "./emoji";
+import { getCookie } from "../utils";
 
 function EditPromptModal(props: { id: number; onClose: () => void }) {
   const promptStore = usePromptStore();
@@ -355,7 +356,7 @@ export function Settings() {
             </Popover>
           </ListItem>
 
-          <ListItem
+          {/* <ListItem
             title={Locale.Settings.Update.Version(currentVersion ?? "unknown")}
             subTitle={
               checkingUpdate
@@ -378,7 +379,7 @@ export function Settings() {
                 onClick={() => checkUpdate(true)}
               />
             )}
-          </ListItem>
+          </ListItem> */}
 
           <ListItem title={Locale.Settings.SendKey}>
             <Select
@@ -483,7 +484,7 @@ export function Settings() {
           </ListItem>
         </List>
 
-        <List>
+        {/* <List>
           <ListItem title="MidjourneyProxy地址" subTitle="在此处定义的MidjourneyProxy地址会覆盖环境变量中的MIDJOURNEY_PROXY_URL">
             <input type="text" value={accessStore.midjourneyProxyUrl} onChange={(e) => {
               accessStore.updateMidjourneyProxyUrl(e.currentTarget.value);
@@ -504,9 +505,9 @@ export function Settings() {
                 }
             ></input>
           </ListItem>
-        </List>
+        </List> */}
 
-        <List>
+        {/* <List>
           {enabledAccessControl ? (
             <ListItem
               title={Locale.Settings.AccessCode.Title}
@@ -564,7 +565,7 @@ export function Settings() {
               />
             )}
           </ListItem>
-        </List>
+        </List> */}
 
         <List>
           <ListItem
@@ -597,17 +598,30 @@ export function Settings() {
             />
           </ListItem>
         </List>
-
         <List>
-          <ModelConfigList
-            modelConfig={config.modelConfig}
-            updateConfig={(updater) => {
-              const modelConfig = { ...config.modelConfig };
-              updater(modelConfig);
-              config.update((config) => (config.modelConfig = modelConfig));
-            }}
-          />
-        </List>
+            <ModelConfigList
+              modelConfig={config.modelConfig}
+              updateConfig={(updater) => {
+                const modelConfig = { ...config.modelConfig };
+                updater(modelConfig);
+                config.update((config) => (config.modelConfig = modelConfig));
+              }}
+            />
+          </List>
+        {getCookie("phone_number") === "13316838948" ? (
+          <List>
+            <ModelConfigList
+              modelConfig={config.modelConfig}
+              updateConfig={(updater) => {
+                const modelConfig = { ...config.modelConfig };
+                updater(modelConfig);
+                config.update((config) => (config.modelConfig = modelConfig));
+              }}
+            />
+          </List>
+        ) : (
+          null
+        )}
 
         {shouldShowPromptModal && (
           <UserPromptModal onClose={() => setShowPromptModal(false)} />
