@@ -253,12 +253,19 @@ export const useChatStore = create<ChatStore>()(
         get().updateStat(message);
         get().summarizeSession();
       },
+     
       getFreeAttr() {
         const accState = useAccessStore.getState();
         const session = get().currentSession();
-        const lastReciveMessage = session.messages.findLast(
-          (v) => v.role === "assistant",
-        );
+        // const lastReciveMessageIndex =  get().findLastAssistantIndex(session);
+        let lastReciveMessage: ChatMessage | null = null;
+        for (let i = session.messages.length - 1; i >= 0; i--) {
+            const message = session.messages[i];
+            if (message.role === "assistant") {
+              lastReciveMessage = { ...message };
+              break;
+            }
+        }
 
         if (accState.isFree) {
           return {
