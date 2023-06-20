@@ -744,6 +744,7 @@ export const useChatStore = create<ChatStore>()(
             createMessage({
               role: "user",
               content: Locale.Store.Prompt.Topic,
+              free_attr: get().getFreeAttr()
             }),
           );
           const accState = useAccessStore.getState();
@@ -751,7 +752,7 @@ export const useChatStore = create<ChatStore>()(
             messages: topicMessages,
             config: {
               model: "gpt-3.5-turbo",
-              stream: accState.isFree && accState.freeType === 1,
+              stream: accState.isFree,
             },
             onFinish(message) {
               get().updateCurrentSession(

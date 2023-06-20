@@ -7,6 +7,7 @@ import EmojiPicker, {
 import { ModelType } from "../store";
 
 import BotIcon from "../icons/bot.svg";
+import ChatIcon from "../icons/chat-icon.png";
 import BlackBotIcon from "../icons/black-bot.svg";
 
 export function getEmojiUrl(unified: string, style: EmojiStyle) {
@@ -35,7 +36,10 @@ export function Avatar(props: { model?: ModelType; avatar?: string }) {
         {props.model?.startsWith("gpt-4") ? (
           <BlackBotIcon className="user-avatar" />
         ) : (
-          <BotIcon className="user-avatar" />
+          // <BotIcon className="user-avatar" />
+          <div className="user-avatar">
+            <img src={ChatIcon.src} style={{ maxWidth: "100%" }} />
+          </div>
         )}
       </div>
     );

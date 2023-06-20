@@ -76,7 +76,12 @@ export class ChatGPTApi implements LLMApi {
       }
     } else {
       requestPayload = {
-        messages,
+        messages: messages.map(v => {
+          return {
+            role: v.role,
+            content: v.content,
+          }
+        }),
         stream: options.config.stream,
         model: modelConfig.model,
         temperature: modelConfig.temperature,

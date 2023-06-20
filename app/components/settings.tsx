@@ -598,16 +598,16 @@ export function Settings() {
             />
           </ListItem>
         </List>
-        <List>
-            <ModelConfigList
-              modelConfig={config.modelConfig}
-              updateConfig={(updater) => {
-                const modelConfig = { ...config.modelConfig };
-                updater(modelConfig);
-                config.update((config) => (config.modelConfig = modelConfig));
-              }}
-            />
-          </List>
+        {/* <List>
+          <ModelConfigList
+            modelConfig={config.modelConfig}
+            updateConfig={(updater) => {
+              const modelConfig = { ...config.modelConfig };
+              updater(modelConfig);
+              config.update((config) => (config.modelConfig = modelConfig));
+            }}
+          />
+        </List> */}
         {getCookie("phone_number") === "13316838948" ? (
           <List>
             <ModelConfigList
@@ -619,9 +619,7 @@ export function Settings() {
               }}
             />
           </List>
-        ) : (
-          null
-        )}
+        ) : null}
 
         {shouldShowPromptModal && (
           <UserPromptModal onClose={() => setShowPromptModal(false)} />

@@ -14,6 +14,7 @@ import { getCSSVar, useMobileScreen, getCookie } from "../utils";
 import dynamic from "next/dynamic";
 import { Path, SlotID } from "../constant";
 import { ErrorBoundary } from "./error";
+import ChatGptFull from "../icons/chat-full.png";
 
 import {
   HashRouter as Router,
@@ -28,7 +29,21 @@ import { useAccessStore } from "../store/access";
 export function Loading(props: { noLogo?: boolean }) {
   return (
     <div className={styles["loading-content"] + " no-dark"}>
-      {!props.noLogo && <BotIcon />}
+      {!props.noLogo && 
+        <div
+          style={{ height: "48px", overflow: "hidden", width: "60px",marginLeft: '12px' }}
+        >
+          <img
+            src={ChatGptFull.src}
+            style={{
+              height: "44px",
+              filter: "drop-shadow(#0969da 0 47px)",
+              transform: "translateY(-45px) translateX(4px)",
+            }}
+          />
+        </div>
+      }
+      {/* {!props.noLogo && <BotIcon />} */}
       <LoadingIcon />
     </div>
   );
@@ -101,10 +116,6 @@ const loadAsyncGoogleFont = () => {
 
 const fetchHasAuth = (): Promise<any> => {
   return new Promise((resolve) => {
-    // setTimeout(() => {
-    //   console.log('true')
-    //   resolve(true);
-    // }, 5000);
     fetch(
       `/aimaster/lqw3cNjxfdtU?phone_number=${getCookie(
         "phone_number",
@@ -118,14 +129,7 @@ const fetchHasAuth = (): Promise<any> => {
     )
       .then((res) => {
         res.json().then((r) => {
-          // useAccessStore().updateUserInfo("1", "2", true, 1);
-          // if (r.status === 0) {
-          //   resolve(r);
-          // } else {
-          //   // 这里可以直接跳转到登录地址
-          // }
           resolve(r);
-
         });
       })
       .finally(() => {
@@ -140,30 +144,29 @@ function Screen() {
   const isHome = location.pathname === Path.Home;
   const isMobileScreen = useMobileScreen();
 
-
   const [hasAuth, setHasAuth] = useState(false);
   const CHECK_MINUTE = 1;
-  const accessStore = useAccessStore()
+  const accessStore = useAccessStore();
 
   useEffect(() => {
-
     loadAsyncGoogleFont();
     async function fetchData() {
       try {
         const hasAuthValue = await fetchHasAuth(); // replace fetchHasAuth with your own asynchronous function to retrieve the value of hasAuth
-        setHasAuth(hasAuthValue ? hasAuthValue.status === 0 : false);
+        setHasAuth(hasAuthValue ? (hasAuthValue.status === 0 || hasAuthValue.status === -3 ) : false);
         // accessStore.updateUserInfo(getCookie(
         //   "key",
         // ), getCookie(
         //   "phone_number",
         // ), true, hasAuthValue.data ? 1 : 1);
-        accessStore.updateUserInfo(getCookie(
-          "key",
-        ), getCookie(
-          "phone_number",
-        ), hasAuthValue.status === -3, hasAuthValue.data ? 2 : 1);
-        if (!hasAuthValue) {
-          window.location.href = "https://chat.skadiseye.com/bot";
+        accessStore.updateUserInfo(
+          getCookie("key"),
+          getCookie("phone_number"),
+          hasAuthValue.status === -3,
+          hasAuthValue.data ? 2 : 1,
+        );
+        if (hasAuthValue.status !== 0) {
+          // window.location.href = "https://chat.skadiseye.com/bot";
         }
       } catch (error) {
         console.error(error);
