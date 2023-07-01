@@ -44,6 +44,7 @@ export type ChatConfig = typeof DEFAULT_CONFIG;
 
 export type ChatConfigStore = ChatConfig & {
   reset: () => void;
+  setModel: (model: string) => void;
   update: (updater: (config: ChatConfig) => void) => void;
 };
 
@@ -180,6 +181,11 @@ export const useAppConfig = create<ChatConfigStore>()(
         updater(config);
         set(() => config);
       },
+      setModel(model: string) {
+        const config = { ...get() };
+        config.modelConfig.model = model as ModelType
+        set(() => config);
+      }
     }),
     {
       name: StoreKey.Config,

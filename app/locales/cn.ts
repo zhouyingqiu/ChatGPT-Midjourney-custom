@@ -32,7 +32,7 @@ const cn = {
     Send: "发送",
     Config: {
       Reset: "清除记忆",
-      SaveAs: "存为面具",
+      SaveAs: "存为角色",
     },
   },
   Export: {
@@ -47,8 +47,8 @@ const cn = {
       SubTitle: "可以导出 Markdown 文本或者 PNG 图片",
     },
     IncludeContext: {
-      Title: "包含面具上下文",
-      SubTitle: "是否在消息中展示面具上下文",
+      Title: "包含角色上下文",
+      SubTitle: "是否在消息中展示角色上下文",
     },
     Steps: {
       Select: "选取",
@@ -111,8 +111,8 @@ const cn = {
       SubTitle: "在预览气泡中预览 Markdown 内容",
     },
     Mask: {
-      Title: "面具启动页",
-      SubTitle: "新建聊天时，展示面具启动页",
+      Title: "角色启动页",
+      SubTitle: "新建聊天时，展示角色启动页",
     },
     Prompt: {
       Disable: {
@@ -201,11 +201,11 @@ const cn = {
     Name: "插件",
   },
   Mask: {
-    Name: "面具",
+    Name: "角色",
     Page: {
-      Title: "预设角色面具",
+      Title: "预设角色",
       SubTitle: (count: number) => `${count} 个预设角色定义`,
-      Search: "搜索角色面具",
+      Search: "搜索角色",
       Create: "新建",
     },
     Item: {
@@ -218,7 +218,7 @@ const cn = {
     },
     EditModal: {
       Title: (readonly: boolean) =>
-        `编辑预设面具 ${readonly ? "（只读）" : ""}`,
+        `编辑预设角色 ${readonly ? "（只读）" : ""}`,
       Download: "下载预设",
       Clone: "克隆预设",
     },
@@ -241,8 +241,8 @@ const cn = {
     Skip: "直接开始",
     NotShow: "不再展示",
     ConfirmNoShow: "确认禁用？禁用后可以随时在设置中重新启用。",
-    Title: "挑选一个面具",
-    SubTitle: "现在开始，与面具背后的灵魂思维碰撞",
+    Title: "挑选一个角色",
+    SubTitle: "现在开始，与角色背后的灵魂思维碰撞",
     More: "查看全部",
   },
 

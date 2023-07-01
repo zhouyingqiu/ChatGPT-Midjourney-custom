@@ -158,15 +158,20 @@ function Screen() {
         //   "key",
         // ), getCookie(
         //   "phone_number",
-        // ), true, hasAuthValue.data ? 1 : 1);
+        // ), true, hasAuthValue.data ? 2 : 1);
         accessStore.updateUserInfo(
           getCookie("key"),
           getCookie("phone_number"),
           hasAuthValue.status === -3,
           hasAuthValue.data ? 2 : 1,
         );
-        if (hasAuthValue.status !== 0) {
-          // window.location.href = "https://chat.skadiseye.com/bot";
+        if(hasAuthValue.status === 0) {
+          config.setModel(hasAuthValue.data);
+        }else {
+          config.setModel('gpt-3.5-turbo-0613');
+        }
+        if (hasAuthValue.status !== 0 && hasAuthValue.status !== -3) {
+          window.location.href = "https://chat.skadiseye.com/bot";
         }
       } catch (error) {
         console.error(error);

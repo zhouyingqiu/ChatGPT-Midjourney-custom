@@ -21,6 +21,7 @@ import { useAppConfig, useChatStore } from "../store";
 
 import {
   MAX_SIDEBAR_WIDTH,
+  MEMBER_PAGE_URL,
   MIN_SIDEBAR_WIDTH,
   NARROW_SIDEBAR_WIDTH,
   Path,
@@ -106,6 +107,19 @@ function useDragSideBar() {
   };
 }
 
+function clearAllCookie() {
+  var date = new Date();
+  date.setTime(date.getTime());
+  var keys = document.cookie.match(/[^ =;]+(?=\=)/g);
+  console.log("需要删除的cookie名字：" + keys);
+  if (keys) {
+    for (var i = keys.length; i--; )
+      // $.cookie("key", "", { domain: '.skadiseye.com',path: "/" });
+      document.cookie =
+        keys[i] + "= ; expire=" + date.toUTCString() + "; path=/";
+  }
+}
+
 export function SideBar(props: { className?: string }) {
   const chatStore = useChatStore();
 
@@ -124,7 +138,10 @@ export function SideBar(props: { className?: string }) {
     >
       <div className={styles["sidebar-header"]}>
         <div className={styles["sidebar-title"]}>Chat办公大师</div>
-        <div className={styles["sidebar-sub-title"]}>工作从未如此轻松.</div>
+        <div style={{
+              zoom: '.9',
+            }} className={styles["sidebar-sub-title"]}>注册用户永久免费，
+会员数据由GPT API驱动</div>
         <div
           className={styles["sidebar-logo"] + " no-dark"}
           style={{ height: "48px", overflow: "hidden", width: "60px" }}
@@ -134,7 +151,7 @@ export function SideBar(props: { className?: string }) {
             style={{
               height: "44px",
               filter: "drop-shadow(#0969da 0 47px)",
-              transform: "translateY(-45px) translateX(4px)",
+              transform: "translateY(-45px) translateX(16px)",
             }}
           />
         </div>
@@ -148,13 +165,22 @@ export function SideBar(props: { className?: string }) {
           onClick={() => navigate(Path.NewChat, { state: { fromHome: true } })}
           shadow
         />
-        <IconButton
+        <a
+          href={MEMBER_PAGE_URL}
+          target="_blank"
+          style={{textDecoration: 'none',paddingTop: '6px',marginLeft: '32px'}}
+
+        >
+          会员中心
+        </a>
+
+        {/* <IconButton
           icon={<PluginIcon />}
-          text={shouldNarrow ? undefined : Locale.Plugin.Name}
+          text=
           className={styles["sidebar-bar-button"]}
           onClick={() => showToast(Locale.WIP)}
           shadow
-        />
+        /> */}
       </div>
 
       <div
@@ -186,9 +212,22 @@ export function SideBar(props: { className?: string }) {
             </Link>
           </div>
           <div className={styles["sidebar-action"]}>
-            <a href={REPO_URL} target="_blank">
+            {/* <a href={REPO_URL} target="_blank"> */}
+            <IconButton
+              title="退出登录"
+              icon={<BrainIcon />}
+              onClick={() => {
+                if (confirm("确认退出登录吗？")) {
+                  clearAllCookie();
+                  window.location.href = "https://chat.skadiseye.com/bot";
+                }
+              }}
+              shadow
+            />
+            {/* </a> */}
+            {/* <a href={REPO_URL} target="_blank">
               <IconButton icon={<BrainIcon />} shadow />
-            </a>
+            </a> */}
           </div>
         </div>
         <div>

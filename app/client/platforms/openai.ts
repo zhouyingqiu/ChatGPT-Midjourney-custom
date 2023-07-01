@@ -18,8 +18,10 @@ export class ChatGPTApi implements LLMApi {
     const accessState = useAccessStore.getState();
     if (accessState.isFree) {
       if (accessState.freeType === 1) {
+        // return `http://free1.chatbangong.com/claude/stream_chat`;
         return `/claude/stream_chat`;
       } else {
+        // return `http://free2.chatbangong.com/api/conversation/talk`;
         return `/api/conversation/talk`;
       }
     } else {

@@ -21,11 +21,13 @@ const nextConfig = {
       },
       {
         source: "/claude/:path*",
-        destination: "http://216.240.134.142:8088/claude/:path*",
+        // destination: "http://216.240.134.142:8088/claude/:path*",
+        destination: "http://free1.chatbangong.com/claude/:path*",
       },
       {
         source: "/api/conversation/:path*",
-        destination: "http://216.240.134.142:8071/api/conversation/:path*",
+        // destination: "http://216.240.134.142:8071/api/conversation/:path*",
+        destination: "http://free2.chatbangong.com/api/conversation/:path*",
       },
     ];
 

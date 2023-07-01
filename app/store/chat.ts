@@ -7,7 +7,7 @@ import Locale from "../locales";
 import { showToast } from "../components/ui-lib";
 import { ModelType } from "./config";
 import { createEmptyMask, Mask } from "./mask";
-import { StoreKey } from "../constant";
+import { MEMBER_PAGE_URL, StoreKey } from "../constant";
 import {
   api,
   getHeaders,
@@ -253,18 +253,18 @@ export const useChatStore = create<ChatStore>()(
         get().updateStat(message);
         get().summarizeSession();
       },
-     
+
       getFreeAttr() {
         const accState = useAccessStore.getState();
         const session = get().currentSession();
         // const lastReciveMessageIndex =  get().findLastAssistantIndex(session);
         let lastReciveMessage: ChatMessage | null = null;
         for (let i = session.messages.length - 1; i >= 0; i--) {
-            const message = session.messages[i];
-            if (message.role === "assistant") {
-              lastReciveMessage = { ...message };
-              break;
-            }
+          const message = session.messages[i];
+          if (message.role === "assistant") {
+            lastReciveMessage = { ...message };
+            break;
+          }
         }
 
         if (accState.isFree) {
@@ -355,8 +355,9 @@ export const useChatStore = create<ChatStore>()(
         // make request
         console.log("[User Input] ", sendMessages);
         if (
-          content.toLowerCase().startsWith("/mj") ||
-          content.toLowerCase().startsWith("/MJ")
+          (content.toLowerCase().startsWith("/mj") ||
+            content.toLowerCase().startsWith("/MJ")) &&
+          !useAccessStore.getState().isFree
         ) {
           botMessage.model = "midjourney";
           const startFn = async () => {
@@ -578,6 +579,19 @@ export const useChatStore = create<ChatStore>()(
           get().onNewMessage(botMessage);
           set(() => ({}));
         } else {
+          if(content.toLowerCase().startsWith("/mj") ||
+          content.toLowerCase().startsWith("/MJ")) {
+            showToast(
+              '生成描述图片的功能仅限会员用户使用',
+              {
+                text: '开通会员',
+                onClick() {
+                   window.open(MEMBER_PAGE_URL)
+                },
+              },
+              100000,
+            );
+          }
           api.llm.chat({
             messages: sendMessages,
             config: { ...modelConfig, stream: true },
@@ -744,7 +758,7 @@ export const useChatStore = create<ChatStore>()(
             createMessage({
               role: "user",
               content: Locale.Store.Prompt.Topic,
-              free_attr: get().getFreeAttr()
+              free_attr: get().getFreeAttr(),
             }),
           );
           const accState = useAccessStore.getState();
@@ -799,8 +813,8 @@ export const useChatStore = create<ChatStore>()(
           modelConfig.sendMemory
         ) {
           const accState = useAccessStore.getState();
-          if(accState.isFree && accState.freeType === 1) {
-            console.log('不需要发送摘要')
+          if (accState.isFree && accState.freeType === 1) {
+            console.log("不需要发送摘要");
             return;
           }
           api.llm.chat({
@@ -815,7 +829,7 @@ export const useChatStore = create<ChatStore>()(
               session.memoryPrompt = message;
             },
             onFinish(message) {
-              console.log("[Memory] ", message);
+              // console.log("[Memory] ", message);
               session.lastSummarizeIndex = lastSummarizeIndex;
             },
             onError(err) {
